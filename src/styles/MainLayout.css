@@ -1,0 +1,13 @@
+.bg-default {
+  background-image: url("../assets/default-weather.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-clear {
+  background-image: url("../assets/clear-weather.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
