@@ -1,19 +1,21 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { BsCloudFog2 } from "react-icons/bs";
+import { FaRegSnowflake } from "react-icons/fa";
+import { IoThunderstormOutline } from "react-icons/io5";
+import {
+  TiWeatherCloudy,
+  TiWeatherShower,
+  TiWeatherSunny,
+} from "react-icons/ti";
 import type { IWeatherData } from "../interfaces/weather";
 import "../styles/MainLayout.css";
 import logo from "/logo.svg";
-import { TiWeatherSunny } from "react-icons/ti";
-import { TiWeatherCloudy } from "react-icons/ti";
-import { TiWeatherShower } from "react-icons/ti";
-import { FaRegSnowflake } from "react-icons/fa";
-import { IoThunderstormOutline } from "react-icons/io5";
-import { BsCloudFog2 } from "react-icons/bs";
 
 const Mainlayout = () => {
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("London");
   const [weatherData, setWeatherData] = useState<IWeatherData | null>(null);
-  const [err, setError] = useState(null);
+  const [err, setError] = useState<string | null>(null);
   const APIKEY: string = "5370701fb073915493534e245d929588";
 
   useEffect(() => {
@@ -23,10 +25,13 @@ const Mainlayout = () => {
       return;
     }
 
+    const controller = new AbortController();
+
     const fetchWeatherData = async () => {
       try {
         const res = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKEY}`
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKEY}`,
+          { signal: controller.signal }
         );
 
         if (res.status !== 200) {
@@ -36,41 +41,78 @@ const Mainlayout = () => {
         setWeatherData(res.data);
         setError(null);
       } catch (err: Error | any) {
-        setError(err.message);
-        setWeatherData(null);
+        if (axios.isCancel(err)) {
+          console.log("Request cancelled");
+        } else {
+          setError(err.message);
+        }
       }
     };
 
     const timerId = setTimeout(() => fetchWeatherData(), 1000);
 
-    return () => clearTimeout(timerId);
+    return () => {
+      clearTimeout(timerId);
+      controller.abort();
+    };
   }, [city]);
+
+  const formatDateTime = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    return date.toLocaleDateString("en-US", options);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value);
   };
 
-  const getWeatherBg = (): string | (string | React.JSX.Element)[] => {
-    if (!weatherData) return "bg-default";
+  const getWeatherBg = () => {
+    if (!weatherData)
+      return { cssClass: "bg-default", icon: <TiWeatherSunny /> };
 
     const weatherCondition = weatherData.weather[0].main.toLowerCase();
 
     switch (weatherCondition) {
       case "clear":
-        return ["bg-clear", <TiWeatherSunny />];
+        return {
+          cssClass: "bg-clear",
+          icon: <TiWeatherSunny className="size-[70px]" />,
+        };
 
       case "clouds":
-        return ["bg-cloudy", <TiWeatherCloudy />];
+        return {
+          cssClass: "bg-cloudy",
+          icon: <TiWeatherCloudy className="size-[70px]" />,
+        };
 
       case "rain":
       case "drizzle":
-        return ["bg-rain", <TiWeatherShower />];
+        return {
+          cssClass: "bg-rain",
+          icon: <TiWeatherShower className="size-[70px]" />,
+        };
 
       case "snow":
-        return ["bg-snow", <FaRegSnowflake />];
+        return {
+          cssClass: "bg-snow",
+          icon: <FaRegSnowflake className="size-[70px]" />,
+        };
 
       case "thunderstorm":
-        return ["bg-thunderstorm", <IoThunderstormOutline />];
+        return {
+          cssClass: "bg-storm",
+          icon: <IoThunderstormOutline className="size-[70px]" />,
+        };
 
       case "mist":
       case "smoke":
@@ -81,18 +123,52 @@ const Mainlayout = () => {
       case "ash":
       case "squall":
       case "tornado":
-        return ["bg-mist", <BsCloudFog2 />];
+        return {
+          cssClass: "bg-mist",
+          icon: <BsCloudFog2 className="size-[70px]" />,
+        };
 
       default:
-        return ["bg-default", <TiWeatherSunny />];
+        return {
+          cssClass: "bg-default",
+          icon: <TiWeatherSunny className="size-[70px]" />,
+        };
     }
   };
 
-  const [weatherBackground, weatherIcon] = getWeatherBg();
+  const { cssClass, icon: weatherIcon } = getWeatherBg();
 
   return (
-    <section className={`${getWeatherBg()[0]} h-screen relative`}>
+    <section
+      className={`${cssClass} h-screen relative text-white flex items-center`}
+    >
       <img src={logo} alt="logo" className="absolute left-[120px] top-[37px]" />
+
+      <div className="right-side h-full w-3/5 flex items-start justify-end border border-red-700">
+        <ul className="ml-[118px] mb-[122px] flex items-center gap-2.5">
+          <li>
+            <p className="showTemperature">
+              {weatherData?.main?.temp !== undefined
+                ? Math.round(weatherData.main.temp - 273.15) + "°"
+                : "~"}
+            </p>
+          </li>
+
+          <li className="flex flex-col items-center gap-1">
+            <h2 className="text-6xl">
+              {weatherData?.name?.toUpperCase() ?? "-"}
+            </h2>
+
+            <p className="text-lg">
+              {weatherData?.dt ? formatDateTime(weatherData!.dt) : "~"}
+            </p>
+          </li>
+
+          <li>{weatherIcon ? weatherIcon : ""}</li>
+        </ul>
+      </div>
+
+      <div className="blur-sm border border-yellow-500"></div>
     </section>
   );
 };

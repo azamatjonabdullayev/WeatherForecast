@@ -1,5 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;800;900&display=swap");
+* {
+  font-family: "Roboto";
+}
+
 .bg-default {
-  background-image: url("../assets/default-weather.svg");
+  background-image: url("../assets/default-weather.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -10,4 +15,43 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.bg-rain {
+  background-image: url("../assets/rainy.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-clouds {
+  background-image: url("../assets/cloudy.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-snow {
+  background-image: url("../assets/snow.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-storm {
+  background-image: url("../assets/thunderstorm.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-mist {
+  background-image: url("../assets/fog.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.showTemperature {
+  font-size: 143px;
 }
