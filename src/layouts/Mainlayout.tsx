@@ -13,7 +13,7 @@ import "../styles/MainLayout.css";
 import logo from "/logo.svg";
 
 const Mainlayout = () => {
-  const [city, setCity] = useState("London");
+  const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState<IWeatherData | null>(null);
   const [err, setError] = useState<string | null>(null);
   const APIKEY: string = "5370701fb073915493534e245d929588";
@@ -78,7 +78,10 @@ const Mainlayout = () => {
 
   const getWeatherBg = () => {
     if (!weatherData)
-      return { cssClass: "bg-default", icon: <TiWeatherSunny /> };
+      return {
+        cssClass: "bg-default",
+        icon: <TiWeatherSunny className="size-[70px]" />,
+      };
 
     const weatherCondition = weatherData.weather[0].main.toLowerCase();
 
@@ -144,7 +147,7 @@ const Mainlayout = () => {
     >
       <img src={logo} alt="logo" className="absolute left-[120px] top-[37px]" />
 
-      <div className="right-side h-full w-3/5 flex items-start justify-end border border-red-700">
+      <div className="right-side h-full w-3/5 flex items-end justify-start border border-red-700">
         <ul className="ml-[118px] mb-[122px] flex items-center gap-2.5">
           <li>
             <p className="showTemperature">
@@ -164,11 +167,20 @@ const Mainlayout = () => {
             </p>
           </li>
 
-          <li>{weatherIcon ? weatherIcon : ""}</li>
+          <li>{weatherData ? weatherIcon : ""}</li>
         </ul>
       </div>
 
-      <div className="blur-sm border border-yellow-500"></div>
+      <div className="blur-sm border border-yellow-500 h-screen">
+        <div className="">
+          <input
+            type="text"
+            name="citySearch"
+            className="text-xl"
+            placeholder="Search location..."
+          />
+        </div>
+      </div>
     </section>
   );
 };
