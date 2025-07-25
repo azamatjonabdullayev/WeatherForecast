@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BsCloudFog2 } from "react-icons/bs";
-import { FaRegSnowflake } from "react-icons/fa";
+import { FaRegSnowflake, FaSearch } from "react-icons/fa";
 import { IoThunderstormOutline } from "react-icons/io5";
 import {
   TiWeatherCloudy,
@@ -72,7 +72,11 @@ const Mainlayout = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e?: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e) {
+      console.warn("Событие onChange не передано");
+      return;
+    }
     setCity(e.target.value);
   };
 
@@ -91,32 +95,27 @@ const Mainlayout = () => {
           cssClass: "bg-clear",
           icon: <TiWeatherSunny className="size-[70px]" />,
         };
-
       case "clouds":
         return {
-          cssClass: "bg-cloudy",
+          cssClass: "bg-clouds",
           icon: <TiWeatherCloudy className="size-[70px]" />,
         };
-
       case "rain":
       case "drizzle":
         return {
           cssClass: "bg-rain",
           icon: <TiWeatherShower className="size-[70px]" />,
         };
-
       case "snow":
         return {
           cssClass: "bg-snow",
           icon: <FaRegSnowflake className="size-[70px]" />,
         };
-
       case "thunderstorm":
         return {
           cssClass: "bg-storm",
           icon: <IoThunderstormOutline className="size-[70px]" />,
         };
-
       case "mist":
       case "smoke":
       case "haze":
@@ -130,7 +129,6 @@ const Mainlayout = () => {
           cssClass: "bg-mist",
           icon: <BsCloudFog2 className="size-[70px]" />,
         };
-
       default:
         return {
           cssClass: "bg-default",
@@ -147,7 +145,7 @@ const Mainlayout = () => {
     >
       <img src={logo} alt="logo" className="absolute left-[120px] top-[37px]" />
 
-      <div className="right-side h-full w-3/5 flex items-end justify-start border border-red-700">
+      <div className="left-side h-full w-3/5 flex items-end justify-start ">
         <ul className="ml-[118px] mb-[122px] flex items-center gap-2.5">
           <li>
             <p className="showTemperature">
@@ -159,7 +157,7 @@ const Mainlayout = () => {
 
           <li className="flex flex-col items-center gap-1">
             <h2 className="text-6xl">
-              {weatherData?.name?.toUpperCase() ?? "-"}
+              {weatherData?.name?.toUpperCase() ?? "~"}
             </h2>
 
             <p className="text-lg">
@@ -171,15 +169,20 @@ const Mainlayout = () => {
         </ul>
       </div>
 
-      <div className="blur-sm border border-yellow-500 h-screen">
-        <div className="">
+      <div className="right-side h-screen w-2/5">
+        <div className="flex items-center border-b w-[90%] mt-10 mx-auto border-b-white gap-2.5 py-4">
           <input
             type="text"
             name="citySearch"
-            className="text-xl"
+            className="text-xl outline-none border-none w-[90%]"
             placeholder="Search location..."
+            value={city}
+            onChange={handleInputChange}
           />
+          <FaSearch className="size-7" />
         </div>
+
+        <div className="weatherDetails"></div>
       </div>
     </section>
   );
