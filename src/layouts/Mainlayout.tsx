@@ -169,7 +169,7 @@ const Mainlayout = () => {
         </ul>
       </div>
 
-      <div className="right-side h-screen w-2/5">
+      <div className="right-side h-screen w-2/5 ">
         <div className="flex items-center border-b w-[90%] mt-10 mx-auto border-b-white gap-2.5 py-4">
           <input
             type="text"
@@ -181,8 +181,6 @@ const Mainlayout = () => {
           />
           <FaSearch className="size-7" />
         </div>
-
-        <div className="weatherDetails"></div>
       </div>
     </section>
   );
